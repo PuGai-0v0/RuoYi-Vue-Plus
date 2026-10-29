@@ -3,6 +3,30 @@
 
 - - -
 
+## 分支简介
+
+### 本仓库为 Fork 版本（移动端适配分支）
+
+本分支 fork 自 [dromara/RuoYi-Vue-Plus](https://gitee.com/dromara/RuoYi-Vue-Plus) 的 `6.X` 分支，
+在上游基础上增加了移动端后端模块。**上游官方文档与更新说明请以原仓库为准。**
+
+| 项 | 值                                        |
+| --- |------------------------------------------|
+| 当前发行版 | `v6.0.0-mobile.1.0.0`                    |
+| 上游基线 | `6.X` @ `9227f626a3a37e1546d6c291ed398183e94df92b`（2026-09-28） |
+| Maven 版本 | 保持上游 `6.0.0`，本 fork 不修改任何构建文件的版本号        |
+
+**本 fork 相对上游的改动**
+
+- 新增 `ruoyi-modules/ruoyi-mobile` 模块，接口统一收敛在 `/app/**` 前缀下
+- 扩展 `ruoyi-api` 的 `OssService`：`upload` / `download` / `deleteByIds` / `pageByUser`
+- 新增 `script/sql/ry_mobile.sql`（`mobile_demo_item`、`mobile_demo_order` 两张演示表）
+
+**使用须知**：部署前需在主库执行 `script/sql/ry_mobile.sql`；
+
+- - -
+
+
 ## 平台简介
 
 [![码云Gitee](https://gitee.com/dromara/RuoYi-Vue-Plus/badge/star.svg?theme=blue)](https://gitee.com/dromara/RuoYi-Vue-Plus)
