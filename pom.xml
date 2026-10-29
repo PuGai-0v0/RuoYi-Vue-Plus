@@ -457,6 +457,13 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!--  移动端模块  -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-mobile</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

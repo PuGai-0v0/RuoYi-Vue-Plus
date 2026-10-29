@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * OSS 文件简要信息对象。
@@ -42,5 +43,25 @@ public class OssDTO implements Serializable {
      * URL地址
      */
     private String url;
+
+    /**
+     * 文件大小
+     */
+    private Long fileSize;
+
+    /**
+     * 文件内容类型
+     */
+    private String contentType;
+
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createTime;
+
+    /**
+     * 存储配置标识
+     */
+    private String service;
 
 }

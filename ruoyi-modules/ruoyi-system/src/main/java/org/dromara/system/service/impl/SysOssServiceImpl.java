@@ -13,6 +13,7 @@ import org.dromara.common.core.domain.PageResult;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.*;
 import org.dromara.common.core.utils.file.FileUtils;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.query.QueryBuilder;
@@ -328,5 +329,55 @@ public class SysOssServiceImpl implements ISysOssService, OssService {
             oss.setUrl(instance.presignGetUrl(oss.getFileName(), Duration.ofSeconds(120)));
         }
         return oss;
+    }
+
+    /**
+     * 上传文件到OSS
+     *
+     * @param file 文件
+     * @return 上传结果
+     */
+    @Override
+    public org.dromara.system.api.domain.OssUploadDTO upload(MultipartFile file) {
+        SysOssVo vo = this.upload(file, null);
+        return new org.dromara.system.api.domain.OssUploadDTO(vo.getUrl(), vo.getOriginalName(), vo.getOssId().toString());
+    }
+
+    /**
+     * 删除文件
+     *
+     * @param ossIds 文件ID数组
+     * @return 是否成功
+     */
+    @Override
+    public Boolean deleteByIds(Long[] ossIds) {
+        return this.deleteWithValidByIds(List.of(ossIds), true);
+    }
+
+    /**
+     * 按当前登录用户分页查询已上传文件
+     *
+     * @param pageNum  页码
+     * @param pageSize 每页条数
+     * @return 文件列表
+     */
+    @Override
+    public org.dromara.system.api.domain.OssPageDTO pageByUser(int pageNum, int pageSize) {
+        SysOssBo bo = new SysOssBo();
+        bo.setCreateBy(LoginHelper.getUserId());
+        PageQuery pageQuery = new PageQuery();
+        pageQuery.setPageNum(pageNum);
+        pageQuery.setPageSize(pageSize);
+        PageResult<SysOssVo> page = this.queryPageList(bo, pageQuery);
+        List<OssDTO> dtoList = StreamUtils.toList(page.getRows(), vo -> {
+            OssDTO dto = BeanUtil.toBean(vo, OssDTO.class);
+            try {
+                dto.setUrl(this.matchingUrl(vo).getUrl());
+            } catch (Exception ignored) {
+                dto.setUrl(vo.getUrl());
+            }
+            return dto;
+        });
+        return new org.dromara.system.api.domain.OssPageDTO(dtoList, page.getTotal());
     }
 }
