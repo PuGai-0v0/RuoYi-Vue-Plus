@@ -50,6 +50,44 @@ public final class LambdaJoinQueryBuilder<T> {
     }
 
     /**
+     * 添加分组字段。
+     *
+     * @param columns 分组字段
+     * @param <E>     字段所属实体类型
+     * @return 当前联表查询构造辅助对象
+     */
+    @SafeVarargs
+    public final <E> LambdaJoinQueryBuilder<T> groupBy(SFunction<E, ?>... columns) {
+        if (columns == null) {
+            return this;
+        }
+        for (SFunction<E, ?> column : columns) {
+            wrapper.groupBy(column);
+        }
+        return this;
+    }
+
+    /**
+     * 添加带表别名的分组字段。
+     *
+     * @param tableAlias 表别名
+     * @param columns    分组字段
+     * @param <E>        字段所属实体类型
+     * @return 当前联表查询构造辅助对象
+     */
+    @SafeVarargs
+    public final <E> LambdaJoinQueryBuilder<T> groupBy(String tableAlias, SFunction<E, ?>... columns) {
+        if (columns == null || columns.length == 0) {
+            return this;
+        }
+        String checkedAlias = AggregateSelectUtils.checkAlias(tableAlias);
+        for (SFunction<E, ?> column : columns) {
+            wrapper.groupBy(checkedAlias, column);
+        }
+        return this;
+    }
+
+    /**
      * 指定主表查询字段。
      *
      * @param columns 查询字段
@@ -171,7 +209,11 @@ public final class LambdaJoinQueryBuilder<T> {
      */
     public <S> LambdaJoinQueryBuilder<T> selectSub(Class<S> entityClass, Consumer<SubQuery<S>> consumer, String alias) {
         SubQuery<S> subQuery = buildPlaceholderSubQuery(entityClass, consumer);
-        wrapper.selectFunc("(" + subQuery.build() + ")", func -> func.values(subQuery.params()),
+        wrapper.selectFunc("(" + subQuery.build() + ")", func -> {
+            // MPJ raw select functions require a non-null column argument array even when SQL has no column placeholders.
+            func.setArgs(new SFunction[0]);
+            return func.values(subQuery.params());
+        },
             AggregateSelectUtils.checkAlias(alias));
         return this;
     }
