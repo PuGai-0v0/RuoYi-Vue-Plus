@@ -12,15 +12,34 @@
 
 | 项 | 值                                        |
 | --- |------------------------------------------|
-| 当前发行版 | `v6.0.0-mobile.1.0.0`                    |
+| 当前发行版 | `v6.0.0-mobile.1.1.0`                    |
 | 上游基线 | `6.X` @ `9227f626a3a37e1546d6c291ed398183e94df92b`（2026-09-28） |
 | Maven 版本 | 保持上游 `6.0.0`，本 fork 不修改任何构建文件的版本号        |
+| 配套前端 | [Gitee](https://gitee.com/Pugai_0v0/plus-ui-mobile) · [GitHub](https://github.com/PuGai-0v0/plus-ui-mobile) |
 
 **本 fork 相对上游的改动**
 
 - 新增 `ruoyi-modules/ruoyi-mobile` 模块，接口统一收敛在 `/app/**` 前缀下
 - 扩展 `ruoyi-api` 的 `OssService`：`upload` / `download` / `deleteByIds` / `pageByUser`
 - 新增 `script/sql/ry_mobile.sql`（`mobile_demo_item`、`mobile_demo_order` 两张演示表）
+
+**注意：`ruoyi-mobile` 模块提供的接口**
+
+全部接口挂在 `/app` 前缀下，与管理端接口隔离，**均标注 `@SaCheckLogin`，调用时需携带 Sa-Token 令牌**。
+登录仍使用上游的 `POST /auth/login`，本模块不另建认证体系。
+
+| 模块 | 接口 | 说明 |
+| --- | --- | --- |
+| 用户 `/app/user` | `GET /info`<br>`POST /logout` | 当前登录用户信息、退出登录 |
+| 文件 `/app/oss` | `POST /upload`<br>`GET /list`<br>`GET /download/{ossId}`<br>`DELETE /{ossIds}` | 上传文件、本人文件分页、下载、批量删除 |
+| 演示条目 `/app/demo/item` | `GET /list`<br>`GET /{id}`<br>`POST`<br>`PUT`<br>`DELETE /{ids}` | 分页查询、详情、新增、修改、删除 |
+| 演示订单 `/app/demo/order` | `POST /create`<br>`GET /list` | 下单、订单分页查询 |
+| 地图 `/app/demo/map` | `GET /poi/around`<br>`GET /regeo` | 高德周边 POI 检索、逆地理编码 |
+| 支付 `/app/demo/pay` | `POST /prepay` | 预下单（微信 / 支付宝通道占位） |
+
+- `/app/demo/**` 为演示接口，用于验证移动端链路，可按业务需要替换或删除
+- 支付通道默认 `enabled=false`；高德地图需填入 Web 服务 key 后方可使用。两者均在
+  `ruoyi-modules/ruoyi-mobile/src/main/resources/mobile.properties` 中配置，仓库内不含任何真实凭证
 
 **使用须知**：部署前需在主库执行 `script/sql/ry_mobile.sql`；
 
